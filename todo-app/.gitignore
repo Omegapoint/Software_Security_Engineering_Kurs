@@ -1,0 +1,20 @@
+# Maven
+target/
+*.jar
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
