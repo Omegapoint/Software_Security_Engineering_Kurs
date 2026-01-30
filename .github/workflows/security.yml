@@ -1,0 +1,89 @@
+name: Security Scanning
+
+on:
+  # Scan changed files in PRs (diff-aware scanning):
+  pull_request: {}
+  # Scan on-demand through GitHub Actions interface:
+  workflow_dispatch: {}
+  # Scan mainline branches if there are changes to .github/workflows/security.yml:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/security.yml
+
+# As always, follow the principle of least privilege:     
+permissions:
+  # Read only access to repository content such as commits, branches, releases and so on.
+  contents: read
+  # Permissions for GitHub Actions to upload SARIF results:
+  security-events: write
+
+jobs:
+  semgrep:
+    # User definable name of this GitHub Actions job.
+    name: semgrep/ci
+    # If you are self-hosting, change the following `runs-on` value:
+    runs-on: ubuntu-latest
+
+    container:
+      # A Docker image with Semgrep installed. Do not change this.
+      image: semgrep/semgrep
+
+    # Skip any PR created by dependabot to avoid permission issues:
+    if: (github.actor != 'dependabot[bot]')
+
+    steps:
+      # Fetch project source with GitHub Actions Checkout. Use either v3 or v4.
+      - uses: actions/checkout@v4
+      # Run the "semgrep ci" command on the command line of the docker image.
+      - run: semgrep scan --sarif > semgrep-results.sarif
+    
+      - name: Save SARIF results as artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: semgrep-scan-results
+          path: semgrep-results.sarif
+          
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: semgrep-results.sarif
+
+
+  trivy:
+    name: Trivy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          # Possible scan-types: 'repo', 'fs', 'container-image'
+          scan-type: 'repo'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          # Specifies what types of issues to scan for
+          scanners: 'vuln,secret,misconfig,license'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+#Secret scanning with TruffleHog
+  truffle:
+    name: TruffleHog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run TruffleHog scanner
+        uses: trufflesecurity/trufflehog@main
+        with:
+          # --no-verification to skip testing the secrets against live services. It's not a bad function but make sure you understand the risk implications.
+          # --github-actions to format output for GitHub Actions 
+          extra-args: --no-verification --github-actions
