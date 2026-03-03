@@ -16,14 +16,14 @@ Semgrep är ett statisk analysverktyg som genomsöker din källkod för säkerhe
 
 - **Semgrep officiell dokumentation:** https://semgrep.dev/docs/
 - **Semgreps regelbibliotek:** https://semgrep.dev/r
-- **Community vs Pro:** https://semgrep.dev/pricing
 
 ### ✅ Din uppgift: Steg 1
 
 1. **Lägg till Semgrep i din `security.yml`** workflow fil
-   - Använd Semgrep GitHub Action för community-versionen
+   - Använd Semgrep GitHub Action 
    - Konfigurera den för att genomsöka katalogen `todo-app`
    - Ställ in den för att använda community-regeluppsättningen (gratis, öppen källkod)
+   - Pusha koden till ditt repos main branch
 
 2. **Kör GitHub Actions-arbetsflödet**
    - Navigera till fliken **Actions** i din GitHub-databas
@@ -67,7 +67,7 @@ Dependabot är GitHubs inbyggda beroendehanteringsverktyg som automatiskt genoms
 
 1. **Aktivera Dependabot via GitHub**
    - Navigera till repot
-   - Gå till **Settings** → **Code security and analysis**
+   - Gå till **Settings** → **Advanced Security**
    - Aktivera **Dependabot alerts**
    - Aktivera **Dependabot security updates** (valfritt, tillåter auto-PR-skapande)
 
@@ -75,7 +75,7 @@ Dependabot är GitHubs inbyggda beroendehanteringsverktyg som automatiskt genoms
    - Navigera till fliken **Security** → **Dependabot alerts** → **verifiera** att det står _Dependency files checked x min ago_
    - Granska alla beroendesårbarheter som identifieras
    - Kontrollera allvarlighetsgrad och påverkade versioner av bibliotek
-   - Notera vilka beroenden i din `pom.xml` som har säkerhetsproblem
+   - Notera vilka beroenden i din `pom.xml` som har säkerhetsproblem 
 
 3. **Exandera Dependabot**
    - Slå på PR skapande för **säkerhetsuppdateringar** och **vanliga uppdateringar**
@@ -95,11 +95,11 @@ Dependabot är GitHubs inbyggda beroendehanteringsverktyg som automatiskt genoms
 - Uppdatera versionen i din `pom.xml`
 - Kör `mvn clean verify` lokalt för att säkerställa ingen brytande ändringar
 - Arkivera uppdateringen och push för att utlösa Dependabot att genomsöka igen
-- Verifiera att aviseringen är löst
+- Verifiera att problemet är löst
 
 ---
 
-## Steg 3: Containerbildöversökning med Trivy
+## Steg 3: Infrastruktursskanning med Trivy
 
 ### 📚 Verktygsöversikt: Trivy
 
@@ -118,7 +118,6 @@ Trivy är en omfattande sårbarhetsöversöksverktyg utvecklat av Aqua Security 
 1. **Lägg till Trivy i ditt `security.yml` workflow**
    - Integrera Trivy i ditt GitHub Actions workflow
    - Konfigurera den för att genomsöka Docker-avbildningen du bygger från din `Dockerfile`
-   - Ställ in den för att misslyckas på kritiska eller höga sårbarheter (konfigurerbar)
 
 2. **Kör GitHub Actions-arbetsflödet**
    - Pusha till main
@@ -127,7 +126,7 @@ Trivy är en omfattande sårbarhetsöversöksverktyg utvecklat av Aqua Security 
 
 3. **Granska containeröversiktsresultat**
    - Navigera till fliken **Security** → **Code scanning alerts**
-   - Leta efter sårbarheter märkta som "Trivy" eller "container"
+   - Leta efter sårbarheter märkta som "Trivy" (Det går att filtera med tool:Trivy)
    - Undersök sårbarheter i basavbildningen
 
 4. **Reflektionsfråga:**
@@ -216,6 +215,7 @@ Genom att slutföra alla fyra steg har du implementerat en säkerhetstoolningpip
 Om du vill fördjupa din säkerhetskompetens:
 
 - Utforska **SBOM (Software Bill of Materials)**-generering med verktyg som CycloneDX
+- TODO, föreslå fler roliga saker
 
 ### 🔗 Användbara resurser
 

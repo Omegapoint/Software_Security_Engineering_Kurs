@@ -20,6 +20,7 @@ permissions:
   security-events: write
 
 jobs:
+  #TODO, Fråga: Bästa metoden eller finns det en actions?
   semgrep:
     # User definable name of this GitHub Actions job.
     name: semgrep/ci
