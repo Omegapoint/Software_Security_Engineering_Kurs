@@ -106,6 +106,20 @@
             <version>4.3.9</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Apache Commons IO -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <!-- Struts 2.3.15.1 with CVE-2017-5638 (EOL, no fix available) -->
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-core</artifactId>
+            <version>2.3.15.1</version>
+        </dependency>
     </dependencies>
 
     <build>
