@@ -1,11 +1,8 @@
 name: Security Scanning
 
 on:
-  # Scan changed files in PRs (diff-aware scanning):
   pull_request: {}
-  # Scan on-demand through GitHub Actions interface:
   workflow_dispatch: {}
-  # Scan every change merged to the main branch:
   push:
     branches:
       - main
@@ -19,22 +16,16 @@ permissions:
 
 jobs:
   semgrep:
-    # User definable name of this GitHub Actions job.
     name: semgrep/ci
-    # If you are self-hosting, change the following `runs-on` value:
     runs-on: ubuntu-latest
 
     container:
-      # A Docker image with Semgrep installed. Do not change this.
       image: semgrep/semgrep
 
-    # Skip any PR created by dependabot to avoid permission issues:
-    if: (github.actor != 'dependabot[bot]')
-
     steps:
-      # Fetch project source with GitHub Actions Checkout. Use either v3 or v4.
+      # Repo checkout
       - uses: actions/checkout@v4
-      # Run the "semgrep ci" command on the command line of the docker image.
+      
       - run: semgrep scan --sarif > semgrep-results.sarif
     
       - name: Save SARIF results as artifact
@@ -42,7 +33,8 @@ jobs:
         with:
           name: semgrep-scan-results
           path: semgrep-results.sarif
-          
+
+      # Uploads results to security tab
       - name: Upload SARIF
         uses: github/codeql-action/upload-sarif@v4
         with:
@@ -89,12 +81,11 @@ jobs:
         continue-on-error: true
         run: |
           # Mount the repository at /tmp in the pinned scanner image and write SARIF for upload.
-          # Scan the full local Git history without contacting services to verify candidates.
+          # Scan the full local Git history without contacting services to verify secrets.
           docker run --rm -v "$PWD:/tmp" -w /tmp trufflesecurity/trufflehog@sha256:8eac1e631d18f4f6d5e00bc3420ef7415bddb9b8db66f968cfdb579a470d3392 \
             git file:///tmp/ --since-commit '' --branch HEAD --no-verification --no-update --sarif > trufflehog-results.sarif
 
       - name: Upload TruffleHog results
-        # Publish SARIF findings in GitHub's Code Scanning interface.
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trufflehog-results.sarif
