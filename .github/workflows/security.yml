@@ -87,4 +87,4 @@ jobs:
         with:
           # --no-verification to skip testing the secrets against live services. It's not a bad function but make sure you understand the risk implications.
           # --github-actions to format output for GitHub Actions 
-          extra-args: --no-verification --github-actions
+          extra_args: --no-verification --github-actions
