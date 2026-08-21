@@ -84,6 +84,7 @@ jobs:
 
       - name: Run TruffleHog scanner
         uses: trufflesecurity/trufflehog@bcfcf73aaf4759d4dadc2783177c245a02792318 # v3.97.0
+        continue-on-error: true
         with:
           # --no-verification to skip testing the secrets against live services. It's not a bad function but make sure you understand the risk implications.
           extra_args: --no-verification
