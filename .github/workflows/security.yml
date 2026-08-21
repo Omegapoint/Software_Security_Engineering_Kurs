@@ -81,12 +81,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Run TruffleHog scanner
-        uses: trufflesecurity/trufflehog@bcfcf73aaf4759d4dadc2783177c245a02792318 # v3.97.0
         continue-on-error: true
+        run: |
+          docker run --rm -v "$PWD:/tmp" -w /tmp trufflesecurity/trufflehog@sha256:8eac1e631d18f4f6d5e00bc3420ef7415bddb9b8db66f968cfdb579a470d3392 \
+            git file:///tmp/ --since-commit '' --branch HEAD --no-verification --no-update --sarif > trufflehog-results.sarif
+
+      - name: Upload TruffleHog results
+        uses: github/codeql-action/upload-sarif@v4
         with:
-          base: ""
-          head: ${{ github.sha }}
-          # Avoid testing candidate secrets against live services.
-          extra_args: --no-verification
+          sarif_file: trufflehog-results.sarif
