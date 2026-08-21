@@ -5,12 +5,10 @@ on:
   pull_request: {}
   # Scan on-demand through GitHub Actions interface:
   workflow_dispatch: {}
-  # Scan mainline branches if there are changes to .github/workflows/security.yml:
+  # Scan every change merged to the main branch:
   push:
     branches:
       - main
-    paths:
-      - .github/workflows/security.yml
 
 # As always, follow the principle of least privilege:     
 permissions:
@@ -58,6 +56,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@v0.36.0
@@ -86,5 +86,7 @@ jobs:
         uses: trufflesecurity/trufflehog@bcfcf73aaf4759d4dadc2783177c245a02792318 # v3.97.0
         continue-on-error: true
         with:
-          # --no-verification to skip testing the secrets against live services. It's not a bad function but make sure you understand the risk implications.
+          base: ""
+          head: ${{ github.sha }}
+          # Avoid testing candidate secrets against live services.
           extra_args: --no-verification
