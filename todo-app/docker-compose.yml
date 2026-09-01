@@ -30,6 +30,7 @@ services:
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://admin:password@mongo:27017/todo_db?authSource=admin
       SPRING_DATA_MONGODB_DATABASE: todo_db
+      VERY_IMPORTANT_KEY: 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
     networks:
       - todo-network
     restart: unless-stopped
