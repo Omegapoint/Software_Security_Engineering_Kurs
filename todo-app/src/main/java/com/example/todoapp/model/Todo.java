@@ -7,14 +7,18 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
+// VULNERABILITY: Class is Serializable - enables deserialization attacks if used with untrusted data
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Document(collection = "todos")
-public class Todo {
+public class Todo implements Serializable {
+    // VULNERABILITY: serialVersionUID should be explicitly set for secure serialization
+    private static final long serialVersionUID = 1L;
 
     @Id
     private String id;
