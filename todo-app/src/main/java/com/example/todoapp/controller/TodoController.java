@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -116,5 +117,46 @@ public class TodoController {
     @GetMapping("/health")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Todo App is running!");
+    }
+
+    /**
+     * VULNERABILITY: Command Injection
+     * User input is directly passed to Runtime.exec() without sanitization
+     */
+    @GetMapping("/execute")
+    public ResponseEntity<String> executeCommand(@RequestParam String command) throws IOException {
+        Process process = Runtime.getRuntime().exec(command);
+        return ResponseEntity.ok("Command executed");
+    }
+
+    /**
+     * VULNERABILITY: Reflected XSS / Unvalidated Output
+     * User input is directly returned in response without encoding
+     */
+    @GetMapping("/echo")
+    public ResponseEntity<String> echo(@RequestParam String message) {
+        return ResponseEntity.ok("<html><body>" + message + "</body></html>");
+    }
+
+    /**
+     * VULNERABILITY: Path Traversal via ID parameter
+     * ID parameter could contain '../' sequences to access unauthorized files
+     */
+    @GetMapping("/file/{id}")
+    public ResponseEntity<String> getFileById(@PathVariable String id) throws Exception {
+        String filePath = "/uploads/" + id;
+        java.nio.file.Files.readAllLines(java.nio.file.Paths.get(filePath));
+        return ResponseEntity.ok("File retrieved");
+    }
+
+    /**
+     * VULNERABILITY: Unvalidated Redirect
+     * User-controlled URL is used for redirect without validation
+     */
+    @GetMapping("/redirect")
+    public ResponseEntity<Void> redirectTo(@RequestParam String url) {
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", url)
+                .build();
     }
 }
